@@ -7,7 +7,7 @@ class Dropper(BaseModel):
     name: str
     code: str | None = None
     description: str | None = None
-    cold_chain: bool | None = False
+    cold_chain: bool | None = None
     volume: int | None = None
     date_expiration: date | None = None
     color: str | None = None
