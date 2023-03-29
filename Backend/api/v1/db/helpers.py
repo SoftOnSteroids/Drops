@@ -1,3 +1,5 @@
+from datetime import datetime, date
+
 def build_query(dict_path: dict) -> dict:
     """
     Cleans the query from None (null) values and 'id' key (keeps '_id' key).
@@ -9,3 +11,14 @@ def build_query(dict_path: dict) -> dict:
         del dict_path["id"]
     query.update({k:v for k,v in dict_path.items() if v!=None})
     return query
+
+def format_date(dose_date) -> datetime:
+    """
+    Formats a date or str(date) to a datetime object with time 00:00:00.
+
+    :param dose_date: The date to format. Admisible as datetime.date object or str(date)
+    """
+    if type(dose_date) == str:
+        dose_date = datetime.strptime(dose_date, "%Y-%m-%d")
+
+    return datetime.combine(dose_date, datetime.min.time())

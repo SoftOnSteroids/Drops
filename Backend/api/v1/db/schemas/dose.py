@@ -47,4 +47,8 @@ def dose_schema(dose) -> dict:
     return dose_schema
 
 def doses_schema(doses) -> list:
+    """
+    Deserialize a list of dose dicts from the database to a list of dose dicts that can be used in the backend.
+    Calls dose_schema() for each dose dict.
+    """
     return [dose_schema(dose) for dose in doses]

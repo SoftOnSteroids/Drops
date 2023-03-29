@@ -1,5 +1,6 @@
 from bson import ObjectId
 from datetime import datetime, date
+from v1.db.helpers import format_date
 
 def dose_serializer(dose: dict) -> dict:
     """
@@ -7,9 +8,6 @@ def dose_serializer(dose: dict) -> dict:
 
     :raises TypeError: If the dose dict is not a dict
     """
-    def format_date(dose_date: date) -> datetime:
-        return datetime.combine(dose_date, datetime.min.time())
-    
     serialized_dose={}
     if "id" in dose.keys() and dose["id"]:
         serialized_dose.update({
