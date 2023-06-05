@@ -17,25 +17,30 @@ def search_doses(doses_query: dict) -> list[Dose] | None:
             doses_found.append(Dose(**doses[i]))
         return doses_found
 
-def search_doses_by_date_range(date_start: date, date_end: date) -> list[Dose] | None:
+def search_doses_by_date_range(date_min: date, date_max: date | None) -> list[Dose] | None:
     """
     Search doses in database by date range.
 
-    If date_start is greater than date_end, the function will swap them.
-    """
-    if date_start > date_end:
-        temp_date = date_start
-        date_start = date_end
-        date_end = temp_date
+    If date_max is None, it will be set to the current date.
 
-    doses = doses_schema(db_client.doses.find({"date_start": 
-                                              {"$gte": datetime.combine(date_start, datetime.min.time()), 
-                                               "$lte": datetime.combine(date_end, datetime.max.time())}
+    If date_min is greater than date_max, the function will swap them.
+    """
+    if date_max is None:
+        date_max = datetime.now().date()
+
+    if date_min > date_max:
+        temp_date = date_min
+        date_min = date_max
+        date_max = temp_date
+
+    doses_found = doses_schema(db_client.doses.find({"date_start": 
+                                              {"$gte": datetime.combine(date_min, datetime.min.time()), 
+                                               "$lte": datetime.combine(date_max, datetime.max.time())}
                                                }))
 
-    if doses:
-        doses_found = []
-        for i in range(len(doses)):
-            doses_found.append(Dose(**doses[i]))
+    if doses_found:
+        doses = []
+        for i in range(len(doses_found)):
+            doses.append(Dose(**doses_found[i]))
 
-        return doses_found
+        return doses

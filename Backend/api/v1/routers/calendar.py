@@ -11,7 +11,7 @@ router = APIRouter(prefix="/calendar",
 async def f_get_calendar(dict_path: dict) -> list[Dose] | None:
     return search_doses(dict_path)
 
-@router.get("/{date_start}/{date_end}")
-async def f_get_calendar_range(date_start: date, date_end: date) -> list[Dose] | None:
+@router.get("/range")
+async def f_get_calendar_range(date_min: date, date_max: date | None = None) -> list[Dose] | None:
     
-    return search_doses_by_date_range(date_start, date_end)
+    return search_doses_by_date_range(date_min, date_max)

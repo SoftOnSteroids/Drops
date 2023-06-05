@@ -19,7 +19,6 @@ def search_dose(dict_dose: dict) -> Dose | None:
         return Dose(**dose_schema(db_client.doses.find_one(dict_dose)))
 
 @router.get("/", response_model= list | None)
-@router.get("/{id}", response_model= list | None)
 async def f_doses(id: Annotated[str | None , Query()] = None,
                   dropper_id: Annotated[str | None, Query()] = None,
                   time: Annotated[time | None, Query()] = None,
