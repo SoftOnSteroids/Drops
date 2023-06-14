@@ -1,0 +1,23 @@
+name: doses_app
+description: A proyect to manage medicine drops dosage and learn Python, Flutter and other technologies.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=2.19.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.5
+  table_calendar: ^3.0.9
+  intl:
+  http:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
