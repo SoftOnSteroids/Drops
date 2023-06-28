@@ -1,5 +1,7 @@
 from datetime import datetime, date
 
+from bson import ObjectId
+
 def build_query(dict_path: dict) -> dict:
     """
     Cleans the query from None (null) values and 'id' key (keeps '_id' key).
@@ -8,6 +10,9 @@ def build_query(dict_path: dict) -> dict:
     """
     query = {}
     if "id" in dict_path.keys() and (dict_path["id"] == None or dict_path["id"] == ""):
+        del dict_path["id"]
+    elif "id" in dict_path.keys():
+        query.update({"_id": ObjectId(dict_path["id"])})
         del dict_path["id"]
     query.update({k:v for k,v in dict_path.items() if v!=None})
     return query
