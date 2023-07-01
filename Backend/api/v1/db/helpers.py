@@ -1,8 +1,9 @@
 from datetime import datetime, date
-
 from bson import ObjectId
+from v1.db.client import db_client
+from v1.db.models.dose import Dose
 
-def build_query(dict_path: dict) -> dict:
+def clean_query(dict_path: dict) -> dict:
     """
     Cleans the query from None (null) values and 'id' key (keeps '_id' key).
     

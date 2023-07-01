@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta, time
 from v1.db.client import db_client
 from v1.db.models.dose import Dose
 from v1.db.models.pyObjectId import PyObjectId
-from v1.db.helpers import build_query
+from v1.db.helpers import clean_query
 
 class Dropper(BaseModel):
     id: PyObjectId | None = Field(default_factory=PyObjectId, alias="_id")
@@ -26,7 +26,6 @@ class Dropper(BaseModel):
 
     def getDoses(self, start: datetime, end: datetime) -> list[Dose] | None:
         # If doses in range date exist return it, else create it.
-        # return [Dose(dropper_id="fake dose", application_datetime=datetime.now())]
         if self.doses == None or len(self.doses) == 0 or max(d.application_datetime for d in self.doses) < end:
             self.generateDoses(end=end)
         return self.doses
@@ -50,7 +49,7 @@ class Dropper(BaseModel):
 
             db_client.droppers.find_one_and_update(
                 {"_id": self.id},
-                {"$set": build_query(self.dict())},
+                {"$set": clean_query(self.dict())},
                 return_document= ReturnDocument.AFTER
                 )
             

@@ -4,7 +4,7 @@ from pymongo import ReturnDocument
 from typing import Annotated
 from v1.db.models.dropper import Dropper
 from v1.db.client import db_client
-from v1.db.helpers import build_query
+from v1.db.helpers import clean_query
 from datetime import date, datetime
 
 router = APIRouter(prefix="/droppers",
@@ -32,8 +32,7 @@ async def f_droppers(id: Annotated[str | None, Query()] = None,
              "end_day": end_day,
              "date_expiration": date_expiration
             }
-    
-    query = build_query(dict_path)
+    query = clean_query(dict_path)
     return [Dropper.parse_obj(dropper_dict) for dropper_dict in db_client.droppers.find(query)]
 
 @router.post("/", response_model=Dropper, status_code=status.HTTP_201_CREATED)

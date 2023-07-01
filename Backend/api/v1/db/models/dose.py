@@ -1,7 +1,12 @@
-from pydantic import BaseModel
-from datetime import date, datetime, time, timedelta
+from pydantic import BaseModel, Field
+from datetime import datetime
+from v1.db.models.pyObjectId import PyObjectId
 
 class Dose(BaseModel):
-    id: str | None = None
-    dropper_id: str
-    application_datetime: datetime | None = None
+    dropper_id: PyObjectId | None = Field(default_factory=PyObjectId)
+    application_datetime: datetime
+    
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {PyObjectId: str}
