@@ -10,7 +10,8 @@ def get_doses(dict_url: dict) -> list[Dose] | None:
     dict_url = clean_query(dict_url)
     query = {
         "$unwind": "$doses",
-        "$match": {}
+        "$match": {},
+        "$project": {"_id": 0, "doses": 1}
     }
     if "dropper_id" in dict_url:
         query["$match"].update({"doses.dropper_id": dict_url["dropper_id"]})
@@ -24,6 +25,5 @@ def get_doses(dict_url: dict) -> list[Dose] | None:
             query["$match"]["doses.application_datetime"].update({"$gte": dict_url["start"]})
         if "end" in dict_url:
             query["$match"]["doses.application_datetime"].update({"$lte": dict_url["end"]})
-    query.update({"$project": {"_id": 0, "doses": 1}})
     doses_db = db_client.droppers.aggregate([{k: v} for k,v in query.items()])
     return [Dose.parse_obj(dose_db["doses"]) for dose_db in doses_db] if doses_db else None
