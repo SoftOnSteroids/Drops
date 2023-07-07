@@ -4,16 +4,13 @@ from pymongo import ReturnDocument
 from typing import Annotated
 from v1.db.models.dropper import Dropper
 from v1.db.client import db_client
-from v1.db.helpers import clean_query
+from v1.db.logic.helpers import Helper
+from v1.db.logic.dropper import DropperHelper
 from datetime import date, datetime
 
 router = APIRouter(prefix="/droppers",
                    tags=["droppers"],
                    responses={status.HTTP_404_NOT_FOUND: {"message": "No encontrado."}})
-
-def search_dropper(dict_dropper: dict) -> Dropper | None:
-    if a_dropper := db_client.droppers.find_one(dict_dropper):
-        return Dropper.parse_obj(a_dropper)
 
 @router.get("/")
 async def f_droppers(id: Annotated[str | None, Query()] = None,
@@ -32,8 +29,8 @@ async def f_droppers(id: Annotated[str | None, Query()] = None,
              "end_day": end_day,
              "date_expiration": date_expiration
             }
-    query = clean_query(dict_path)
-    return [Dropper.parse_obj(dropper_dict) for dropper_dict in db_client.droppers.find(query)]
+    droppers_db = db_client.droppers.find(Helper.clean_query(dict_path))
+    return [Dropper.parse_obj(dropper_db) for dropper_db in droppers_db]
 
 @router.post("/", response_model=Dropper, status_code=status.HTTP_201_CREATED)
 async def f_add_dropper(dropper: Dropper) -> Dropper | HTTPException:
@@ -44,7 +41,7 @@ async def f_add_dropper(dropper: Dropper) -> Dropper | HTTPException:
         "$or": [{"name": dropper.name}, 
                 {"code": dropper.code}]
         }
-    if search_dropper(query):
+    if DropperHelper.search_dropper(query):
         raise HTTPException(
             status_code=status.HTTP_204_NO_CONTENT, 
             detail="dropper with same name and/or code already exist"
@@ -56,6 +53,7 @@ async def f_add_dropper(dropper: Dropper) -> Dropper | HTTPException:
 @router.put("/", response_model=Dropper, status_code=status.HTTP_200_OK)
 async def f_modify_dropper(dropper: Dropper) -> Dropper | HTTPException:
     dropper_dict = {k: v for k, v in dropper.dict().items() if v is not None and k != "id"}
+
     if dropper_updated := db_client.droppers.find_one_and_update(
         {"_id": ObjectId(dropper.id) if dropper.id else None},
         {"$set": dropper_dict},
